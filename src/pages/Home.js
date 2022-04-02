@@ -1,5 +1,13 @@
 import React from "react";
-import { Container, Grid, Header, Icon, Image } from "semantic-ui-react";
+import {
+  Container,
+  Statistic,
+  Grid,
+  Header,
+  Icon,
+  Image,
+  Segment,
+} from "semantic-ui-react";
 
 export default function Home() {
   return (
@@ -16,13 +24,37 @@ export default function Home() {
           <Grid.Column width={9} style={{ margin: "5em 0em" }}>
             <Container textAlign="center">
               <Header as="h1" id="libre" style={{ fontSize: "4rem" }}>
-                Kariyerine giden yolu arıyorsan burası tam sana göre
+                Kariyerine Giden Yolu Arıyorsan Burası Tam Sana Göre
               </Header>
             </Container>
           </Grid.Column>
         </Grid>
       </div>
-      <div className="stageSection" style={{ marginTop: "8rem" }}>
+      <div className="statistic">
+        <Segment inverted>
+          <Statistic.Group inverted  color="violet" >
+            <div style={{margin:"auto"}}>
+            <Statistic >
+              <Statistic.Value>20,258</Statistic.Value>
+              <Statistic.Label>aktif iş ilanı</Statistic.Label>
+            </Statistic>
+            <Statistic>
+              <Statistic.Value>31,200</Statistic.Value>
+              <Statistic.Label>toplam kullanıcı</Statistic.Label>
+            </Statistic>
+            <Statistic>
+              <Statistic.Value>2,258</Statistic.Value>
+              <Statistic.Label>bugün iş arayanlar</Statistic.Label>
+            </Statistic>
+            <Statistic>
+              <Statistic.Value><Icon name='building' />12</Statistic.Value>
+              <Statistic.Label>bugün dahil olan firmalar</Statistic.Label>
+            </Statistic>
+            </div>
+          </Statistic.Group>
+        </Segment>
+      </div>
+      <div className="stageSection" style={{ marginTop: "6rem" }}>
         <Header
           as="h1"
           id="shadow"
@@ -156,81 +188,6 @@ export default function Home() {
             </Grid.Column>
           </Grid.Row>
         </Grid>
-      </div>
-      <div className="footerSection" style={{ marginTop: "8rem" }}>
-        <hr />
-        <div class="ui vertical segment" style={{ padding: "5em 0em;" }}>
-          <div class="ui container">
-            <div class="ui stackable  grid">
-              <div class="row">
-                <div class="three wide column">
-                  <h4 class="ui header">About</h4>
-                  <div role="list" class="ui  link list">
-                    <p role="listitem" class="item">
-                      Sitemap
-                    </p>
-                    <a role="listitem" class="item">
-                      Contact Us
-                    </a>
-                    <a role="listitem" class="item">
-                      Religious Ceremonies
-                    </a>
-                    <a role="listitem" class="item">
-                      Gazebo Plans
-                    </a>
-                  </div>
-                </div>
-                <div class="three wide column">
-                  <h4 class="ui header">Products</h4>
-                  <div role="list" class="ui link list">
-                    <a role="listitem" class="item">
-                      Banana Pre-Order
-                    </a>
-                    <a role="listitem" class="item">
-                      DNA FAQ
-                    </a>
-                    <a role="listitem" class="item">
-                      How To Access
-                    </a>
-                    <a role="listitem" class="item">
-                      Favorite X-Men
-                    </a>
-                  </div>
-                </div>
-                <div class="three wide column">
-                  <h4 class="ui header">Services</h4>
-                  <div role="list" class="ui link list">
-                    <a role="listitem" class="item">
-                      Banana Pre-Order
-                    </a>
-                    <a role="listitem" class="item">
-                      DNA FAQ
-                    </a>
-                    <a role="listitem" class="item">
-                      How To Access
-                    </a>
-                    <a role="listitem" class="item">
-                      Favorite X-Men
-                    </a>
-                  </div>
-                </div>
-                <div class="seven wide column">
-                  <h4 class="ui header">Footer Header</h4>
-                  <p>
-                    Extra space for a call to action inside the footer that
-                    could help re-engage users.
-                  </p>
-                  <div className="socialMedia" style={{fontSize:"2rem"}}>
-                    <Icon className="youtube"></Icon>
-                    <Icon className="facebook"></Icon>
-                    <Icon className="twitter"></Icon>
-                    <Icon className="linkedin"></Icon>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </Container>
   );

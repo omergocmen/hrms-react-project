@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, Checkbox, Image, List, Segment } from "semantic-ui-react";
-import FilterService from "../services/filterService";
+import CityService from "../services/cityService";
+
 
 export default function CityFilter() {
   const [cities, setCities] = useState([]);
+  const cityService = new CityService();
 
   useEffect(() => {
-    const filterService = new FilterService();
-    filterService.getCities().then((result) => setCities(result.data));
+    cityService.getCities().then(result=>setCities(result.data))
   }, []);
 
   return (
