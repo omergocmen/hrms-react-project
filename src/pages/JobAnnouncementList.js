@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import JobAnnouncmentService from "../services/jobAnnouncementService";
 import {
   Grid,
@@ -47,9 +48,9 @@ export default function JobAnnouncementList() {
             <Card.Group itemsPerRow={2}>
               {jobAnnouncements.map((jobAnnouncement, index) => (
                 <Card key={index} centered color="violet" size="tiny">
-                  <Card.Content>
+                  <Card.Content >
                     <Image
-                    style={{margin:"2rem 0"}}
+                      style={{ margin: "2rem 0" }}
                       circular
                       size="small"
                       src="https://1.semantic-ui.com/images/avatar/large/stevie.jpg"
@@ -59,7 +60,8 @@ export default function JobAnnouncementList() {
                       {getCities(jobAnnouncement.cities)}
                       <p>
                         <strong>
-                          Son başvuru tarihi  {jobAnnouncement.applicationDeadline}
+                          Son başvuru tarihi{" "}
+                          {jobAnnouncement.applicationDeadline}
                         </strong>
                       </p>
                       <p>
@@ -72,7 +74,12 @@ export default function JobAnnouncementList() {
                   <Card.Content></Card.Content>
                   <Card.Content extra>
                     <div className="ui two buttons">
-                      <Button inverted color="violet">
+                      <Button
+                        as={NavLink}
+                        to={`/jobs/${jobAnnouncement.id}`}
+                        inverted
+                        color="violet"
+                      >
                         İlana git
                       </Button>
                     </div>

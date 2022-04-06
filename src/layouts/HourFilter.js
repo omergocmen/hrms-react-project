@@ -4,11 +4,6 @@ import { Menu, List, Segment, Checkbox } from "semantic-ui-react";
 export default function HourFilter() {
   const [activeItems, setActiveItems] = useState([]);
 
-  /* useEffect(() => {
-    const filterService=new FilterService();
-    filterService.getFilterJob().then(result=>setJobPositions(result.data.data));
-    }, [])*/
-
   const handleItemClick = (name) => {
     activeItems.includes(name)
       ? removeElement(name)

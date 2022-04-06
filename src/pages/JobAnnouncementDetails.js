@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import JobAnnouncementService from "../services/jobAnnouncementService";
+
 import {
-  Card,
   Image,
   Grid,
   Container,
@@ -10,23 +12,47 @@ import {
   Button,
 } from "semantic-ui-react";
 
-export default function jobAnnouncementDetails() {
+export default function JobAnnouncementDetails() {
+  const jobAnnoucmentService = new JobAnnouncementService();
+  const [jobAnnoucment, setJobAnnoucment] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [jobPositions, setJobPositions] = useState([]);
+  const [employer, setEmployer] = useState([]);
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    jobAnnoucmentService.getById(id).then((result) => {
+      setJobAnnoucment(result.data.data);
+      setCities(result.data.data.cities);
+      setJobPositions(result.data.data.jobPositions);
+      setEmployer(result.data.data.employer);
+    });
+  }, []);
+
+  const getCities = (cities) => {
+    return (
+      <List bulleted horizontal>
+        {cities.map((city, index) => (
+          <List.Item key={index} as="a">
+            {city.cityName}
+          </List.Item>
+        ))}
+      </List>
+    );
+  };
+
   return (
     <div>
       <Container style={{ marginTop: "6rem" }}>
-        <Segment raised  textAlign="left">
+        <Segment raised textAlign="left">
           <Grid>
             <Grid.Column floated="left" width={5}>
               <h3>Muhasebe Personeli</h3>
-              <b>Matsis Matbaa Hizmetleri San. Tic. Ltd Şti.</b>
-              <div>
-                <List bulleted horizontal>
-                  <List.Item as="a">Ankara</List.Item>
-                  <List.Item as="a">İstanbul</List.Item>
-                  <List.Item as="a">İzmir</List.Item>
-                </List>
-              </div>
+              <b>{employer.companyName}</b>
+              <div>{ getCities(cities)}</div>
               <p>Güncellenme Tarihi 28.10.2022</p>
+              <b>Son Başvuru Tarihi 05.12.2022</b>
             </Grid.Column>
             <Grid.Column floated="right" width={5}>
               <Button floated="right" inverted color="violet">
@@ -35,10 +61,10 @@ export default function jobAnnouncementDetails() {
             </Grid.Column>
           </Grid>
 
-          <Segment >
+          <Segment>
             <Header as="h5">
               Çalışma Şekli
-              <Header.Subheader>Tam Zamanlı</Header.Subheader>
+              <Header.Subheader>{jobAnnoucment.shift}</Header.Subheader>
             </Header>
             <Header as="h5">
               Departman
@@ -52,6 +78,13 @@ export default function jobAnnouncementDetails() {
               Başvuru Sayısı
               <Header.Subheader>128</Header.Subheader>
             </Header>
+            <Header as="h5">
+              Maaş Aralığı
+              <Header.Subheader>
+                <b>En Düşük Maaş {jobAnnoucment.minSalary} TL</b>
+                <b style={{marginLeft:"2rem"}}>En Yüksek Maaş  {jobAnnoucment.maxSalary} TL</b>
+              </Header.Subheader>
+            </Header>
           </Segment>
         </Segment>
         <Segment raised>
@@ -64,7 +97,7 @@ export default function jobAnnouncementDetails() {
             </Grid.Column>
             <Grid.Column width={10}>
               <Container text fluid>
-                <h1>Deneme</h1>
+                <h1>{jobAnnoucment.description}</h1>
                 <p>
                   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
                   Aenean commodo ligula eget dolor. Aenean massa strong. Cum

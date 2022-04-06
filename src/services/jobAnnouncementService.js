@@ -5,6 +5,10 @@ export default class JobAnnouncementService{
         return axios.get("/api/job_announcements/getAll");
     }
 
+    getById(id){
+        return axios.get("/api/job_announcements/getById?id="+id);
+    }
+
     addJobAnnouncment(JobAnnouncement){
         return axios.post("/api/job_announcements/add",JobAnnouncement);
     }

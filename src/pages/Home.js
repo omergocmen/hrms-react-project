@@ -1,4 +1,6 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router";
 import {
   Container,
   Statistic,
@@ -10,6 +12,10 @@ import {
 } from "semantic-ui-react";
 
 export default function Home() {
+  const auth=useSelector(state=>state.auth);
+  console.log(auth);
+
+
   return (
     <Container>
       <div id="slideSection">

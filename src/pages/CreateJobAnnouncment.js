@@ -6,7 +6,6 @@ import {
   Dropdown,
   Input,
   TextArea,
-  Card,
   Form,
   Grid,
   Container,
@@ -15,20 +14,34 @@ import {
 import JobPositionsService from "../services/jobPositionsService";
 import CityService from "../services/cityService";
 import JobAnnouncementService from "../services/jobAnnouncementService";
+import LanguageService from "../services/languageService";
+import { toast } from "react-toastify";
+import UserService from "../services/userService";
 
 export default function CreateJobAnnouncment() {
   const jobPositionsService = new JobPositionsService();
   const cityService = new CityService();
   const jobAnnoucmentService = new JobAnnouncementService();
+  const languageService = new LanguageService();
+  const userService = new UserService();
 
   const [JobPositions, setJobPositions] = useState([]);
   const [cities, setCities] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [selectedCities, setSelectedCities] = useState([]);
+  const [employer, setEmployer] = useState({});
 
-  const workingTypeOparation = [
+  const workingTimeOparation = [
     { key: 1, text: "Tam Zamanlı", value: 1 },
     { key: 2, text: "Yarı Zamanlı", value: 2 },
     { key: 3, text: "Gün Bazında", value: 3 },
     { key: 4, text: "Esnek", value: 4 },
+  ];
+
+  const workingTypeOparation = [
+    { key: 1, text: "Yüz Yüze", value: 1 },
+    { key: 2, text: "Çevrimiçi Online", value: 2 },
+    { key: 3, text: "Hibrit", value: 3 },
   ];
 
   const educationLevelOption = [
@@ -71,11 +84,10 @@ export default function CreateJobAnnouncment() {
     jobDescription: Yup.string().required("Açıklama Kısmı Zorunlu"),
     jobPositionId: Yup.number().required("Pozisyon Bilgisi Zorunlu"),
     educationLevelId: Yup.number().required("Eğitim Bilgisi Zorunlu"),
-    workingTypeId: Yup.number().required("Çalışma Tipi Zorunlu"),
+    workingTimeId: Yup.number().required("Çalışma Tipi Zorunlu"),
     numberOfOpenPositions: Yup.number()
       .required("Açık Pozisyon Sayısı Zorunlu")
       .min(1, "Kota 1'den Küçük Olamaz"),
-    cityId: Yup.number().required("Şehir Bilgisi Zorunlu"),
     applicationDeadline: Yup.string().required("İlan Bitiş Tarihi Zorunlu"),
     minSalary: Yup.number()
       .min(0, "Maaş 0'dan Az Olamaz")
@@ -90,9 +102,11 @@ export default function CreateJobAnnouncment() {
       jobDescription: "",
       jobPositionId: "",
       educationLevelId: "",
+      workingTimeId: "",
       workingTypeId: "",
       numberOfOpenPositions: "",
-      cityId: "",
+      cityId: [],
+      languageId: [],
       applicationDeadline: "",
       maxSalary: "",
       minSalary: "",
@@ -108,6 +122,8 @@ export default function CreateJobAnnouncment() {
       .getJobPositions()
       .then((result) => setJobPositions(result.data.data));
     cityService.getCities().then((result) => setCities(result.data));
+    languageService.getLanguages().then((result) => setLanguages(result.data));
+    userService.getUser().then((result) => setEmployer(result.data.data));
   }, []);
 
   const jobPositionOption = JobPositions.map((jobPosition, index) => ({
@@ -121,35 +137,42 @@ export default function CreateJobAnnouncment() {
     value: city.cityId,
   }));
 
+  const languagesOption = languages.map((language, index) => ({
+    key: index,
+    text: language.languageName,
+    value: language.id,
+  }));
+
   const handleChangeSemantic = (value, fieldName) => {
     formik.setFieldValue(fieldName, value);
   };
 
   const createJobAnnouncment = (values) => {
-    console.log(values);
-    const cities = [{ cityId: values.cityId }];
+    values.cityId.map((id) => selectedCities.push({ cityId: id }));
+
     const jobPositions = [{ id: values.jobPositionId }];
     const jobAnnouncment = {
       description: values.jobDescription,
       military: militaryOption[values.militaryTypeId - 1].text,
       drivingLicense: drivingLicenseOption[values.drivingLicenseId - 1].text,
-      shift: workingTypeOparation[values.workingTypeId - 1].text,
+      shift: workingTimeOparation[values.workingTimeId - 1].text,
+      workingType: workingTypeOparation[values.workingTypeId - 1].text,
       openPositions: values.numberOfOpenPositions,
       applicationDeadline: values.applicationDeadline,
       isActive: true,
       minSalary: values.minSalary,
       maxSalary: values.maxSalary,
-      experience:experienceOption[values.experienceId-1].text,
+      experience: experienceOption[values.experienceId - 1].text,
       educationLevel: educationLevelOption[values.educationLevelId - 1].text,
       employer: {
-        id: "3",
+        id: employer.id,
       },
-      cities: cities,
+      cities: selectedCities,
       jobPositions: jobPositions,
     };
     jobAnnoucmentService
       .addJobAnnouncment(jobAnnouncment)
-      .then((result) => console.log(result.data));
+      .then((result) => toast.success("İlan Başarıyla Oluşturuldu"));
   };
 
   return (
@@ -158,54 +181,60 @@ export default function CreateJobAnnouncment() {
         <h1 id="playfair" style={{ margin: "2rem" }}>
           İş İlanı Oluştur
         </h1>
-        <Form onSubmit={formik.handleSubmit} style={{ margin: "4rem" }}>
-          <Form.Field style={{ marginBottom: "1rem" }}>
-            <label>İş Pozisyonu</label>
-            <Dropdown
-              clearable
-              item
-              placeholder="İş pozisyonu"
-              search
-              selection
-              onChange={(event, data) =>
-                handleChangeSemantic(data.value, "jobPositionId")
-              }
-              onBlur={formik.onBlur}
-              id="jobPositionId"
-              value={formik.values.jobPositionId}
-              options={jobPositionOption}
-            />
-            {formik.errors.jobPositionId && formik.touched.jobPositionId && (
-              <div className={"ui pointing red basic label"}>
-                {formik.errors.jobPositionId}
-              </div>
-            )}
-          </Form.Field>
+        <Form onSubmit={formik.handleSubmit} style={{ margin: "5rem" }}>
           <Grid>
             <Grid.Column width={8}>
-              <Form.Field>
-                <label>Şehir</label>
+              <Form.Field style={{ marginBottom: "1rem" }}>
+                <label>İş Pozisyonu</label>
                 <Dropdown
                   clearable
                   item
-                  placeholder="Şehir"
+                  placeholder="İş pozisyonu"
                   search
                   selection
                   onChange={(event, data) =>
-                    handleChangeSemantic(data.value, "cityId")
+                    handleChangeSemantic(data.value, "jobPositionId")
                   }
                   onBlur={formik.onBlur}
-                  id="cityId"
-                  value={formik.values.cityId}
-                  options={citiesOption}
+                  id="jobPositionId"
+                  value={formik.values.jobPositionId}
+                  options={jobPositionOption}
                 />
-                {formik.errors.cityId && formik.touched.cityId && (
+                {formik.errors.jobPositionId &&
+                  formik.touched.jobPositionId && (
+                    <div className={"ui pointing red basic label"}>
+                      {formik.errors.jobPositionId}
+                    </div>
+                  )}
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column width={8}>
+              <Form.Field>
+                <label>Yabancı Dil</label>
+                <Dropdown
+                  clearable
+                  item
+                  placeholder="Yabancı Dil"
+                  search
+                  multiple
+                  selection
+                  onChange={(event, data) =>
+                    handleChangeSemantic(data.value, "languageId")
+                  }
+                  onBlur={formik.onBlur}
+                  id="languageId"
+                  value={formik.values.languageId}
+                  options={languagesOption}
+                />
+                {formik.errors.languageId && formik.touched.languageId && (
                   <div className={"ui pointing red basic label"}>
-                    {formik.errors.cityId}
+                    {formik.errors.languageId}
                   </div>
                 )}
               </Form.Field>
             </Grid.Column>
+          </Grid>
+          <Grid>
             <Grid.Column width={8}>
               <Form.Field>
                 <label>Tecübe Yılı</label>
@@ -230,15 +259,65 @@ export default function CreateJobAnnouncment() {
                 )}
               </Form.Field>
             </Grid.Column>
+            <Grid.Column width={8}>
+              <Form.Field>
+                <label>Şehir</label>
+                <Dropdown
+                  clearable
+                  item
+                  placeholder="Şehir"
+                  search
+                  multiple
+                  selection
+                  onChange={(event, data) =>
+                    handleChangeSemantic(data.value, "cityId")
+                  }
+                  onBlur={formik.onBlur}
+                  id="cityId"
+                  value={formik.values.cityId}
+                  options={citiesOption}
+                />
+                {formik.errors.cityId && formik.touched.cityId && (
+                  <div className={"ui pointing red basic label"}>
+                    {formik.errors.cityId}
+                  </div>
+                )}
+              </Form.Field>
+            </Grid.Column>
           </Grid>
           <Grid stackable>
-            <Grid.Column width={8}>
+            <Grid.Column width={4}>
               <Form.Field>
                 <label>Çalışma Şekli</label>
                 <Dropdown
                   clearable
                   item
                   placeholder="Çalışma Şekli"
+                  search
+                  selection
+                  onChange={(event, data) =>
+                    handleChangeSemantic(data.value, "workingTimeId")
+                  }
+                  onBlur={formik.onBlur}
+                  id="workingTimeId"
+                  value={formik.values.workingTimeId}
+                  options={workingTimeOparation}
+                />
+                {formik.errors.workingTimeId &&
+                  formik.touched.workingTimeId && (
+                    <div className={"ui pointing red basic label"}>
+                      {formik.errors.workingTimeId}
+                    </div>
+                  )}
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column width={4}>
+              <Form.Field>
+                <label>Çalışma Tipi</label>
+                <Dropdown
+                  clearable
+                  item
+                  placeholder="Çalışma Tipi"
                   search
                   selection
                   onChange={(event, data) =>
@@ -443,11 +522,12 @@ export default function CreateJobAnnouncment() {
           </Form.Field>
           <Button
             content="Oluştur"
-            labelPosition="right"
+            labelPosition="left"
             icon="add"
             color="violet"
             type="submit"
             size="large"
+            style={{ marginTop: "2rem" }}
           />
         </Form>
       </Segment>
