@@ -113,6 +113,7 @@ export default function CreateJobAnnouncment() {
     },
     validationSchema: addScheme,
     onSubmit: (values) => {
+      console.log(values);
       createJobAnnouncment(values);
     },
   });
@@ -144,12 +145,14 @@ export default function CreateJobAnnouncment() {
   }));
 
   const handleChangeSemantic = (value, fieldName) => {
+    
     formik.setFieldValue(fieldName, value);
   };
 
   const createJobAnnouncment = (values) => {
+    setSelectedCities([]);
     values.cityId.map((id) => selectedCities.push({ cityId: id }));
-
+    console.log(selectedCities);
     const jobPositions = [{ id: values.jobPositionId }];
     const jobAnnouncment = {
       description: values.jobDescription,
@@ -172,7 +175,9 @@ export default function CreateJobAnnouncment() {
     };
     jobAnnoucmentService
       .addJobAnnouncment(jobAnnouncment)
-      .then((result) => toast.success("İlan Başarıyla Oluşturuldu"));
+      .then((result) => {
+        toast.success("İlan Başarıyla Oluşturuldu")
+      });
   };
 
   return (
